@@ -4,7 +4,7 @@
   <img src="images/nexusleonis.png" alt="NexusLeonis logo" width="240">
 </p>
 
-> \\\*\\\*Historical build record:\\\*\\\* I retired this environment on \\\*\\\*11 August 2026\\\*\\\*. I am preserving it in its final state before wiping the system for a full rebuild based on the lessons I learned from operating, expanding, and troubleshooting it. This repository is no longer maintained and is not intended to be a deployable build guide.
+> \*\*Historical build record:\*\* I retired this environment on \*\*11 August 2026\*\*. I am preserving it in its final state before wiping the system for a full rebuild based on the lessons I learned from operating, expanding, and troubleshooting it. This repository is no longer maintained and is not intended to be a deployable build guide.
 
 NexusLeonis started as a way to teach myself systems administration by actually running systems instead of only reading about them. I had no prior professional IT administration experience, so I used documentation, community resources, and LLMs, primarily Claude, as an interactive learning and troubleshooting aid while I built. Instead of treating the model as a substitute for understanding, I used it to help interpret unfamiliar errors, explain Linux and infrastructure concepts, suggest diagnostic paths, and work through logs until I could identify the actual failure point. Log-based root-cause analysis became one of the main ways I learned to troubleshoot the environment.
 
@@ -119,10 +119,10 @@ The most serious issue, and ultimately the reason I retired the original build, 
 <p align="center">
   <img src="images/LVM-thin-issue.png" alt="Proxmox LVM-thin storage issue at the end of the NexusLeonis OG build" width="900">
   <br>
-  <sub>Proxmox reporting 96% usage on the \\\~1 TB NVMe-backed LVM-thin pool, even though the Docker LXC itself had only \\\~45 GB allocated and was using 33.95 GB.</sub>
+  <sub>Proxmox reporting 96% usage on the \\\\\\\~1 TB NVMe-backed LVM-thin pool, even though the Docker LXC itself had only \\\\\\\~45 GB allocated and was using 33.95 GB.</sub>
 </p>
 
-Repair required taking the affected storage offline and attempting `thin\\\_repair`. I attempted but never successfully completed that repair, and the capacity problem remained unresolved through the end of the project. Rather than keep adding fixes and services on top of a storage layer that became near unusable, I chose to preserve the environment's final state for record, take the lessons learned, and start over cleanly.
+Repair required taking the affected storage offline and attempting `thin\\\\\\\_repair`. I attempted but never successfully completed that repair, and the capacity problem remained unresolved through the end of the project. Rather than keep adding fixes and services on top of a storage layer that became near unusable, I chose to preserve the environment's final state for record, take the lessons learned, and start over cleanly.
 
 ### VM startup and console behavior
 
