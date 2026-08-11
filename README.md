@@ -26,7 +26,9 @@ I built a custom Homepage dashboard as the central view of the environment, adde
 
 The screenshot below shows the Homepage dashboard from the later life of the original environment. Services and status indicators changed over time as the lab evolved.
 
-!\[NexusLeonis OG Homepage](images/Nexusleonis-OG.png)
+<p align="center">
+  <img src="images/Nexusleonis-OG.png" alt="NexusLeonis OG Homepage" width="900">
+</p>
 
 ### 2\. Expansion into a Full Self-Hosted Stack
 
@@ -37,14 +39,16 @@ The Docker environment expanded into several functional groups:
 * Local AI and private search tools
 * File synchronization and documentation tools
 * Home and workflow automation
-* Media Streaming servers 
-* Media library management
+* Media servers
+* Media management and automation
 
-In total by the end, I had roughly 30 services running in the environment, although a small number were placeholders or deployed but not fully configured at the time of the final snapshot.
+Later documentation shows roughly 30 service entries in the environment, although a small number were placeholders or deployed but not fully configured at the time of the snapshot.
 
 I also customized the presentation of the media environment, including a dedicated NexusLeonis header for Jellyfin.
 
-!\[Custom NexusLeonis Jellyfin header](images/jellyfin-image.png)
+<p align="center">
+  <img src="images/jellyfin-image.png" alt="Custom NexusLeonis Jellyfin header" width="900">
+</p>
 
 This phase pushed the project beyond simply installing containers. I had to manage port conflicts, persistent storage, container permissions, API integrations, monitoring, updates, and service dependencies while keeping the environment usable.
 
@@ -62,7 +66,7 @@ An ASUS ROG Zephyrus laptop was repurposed as **Mimir**, a Linux Mint workstatio
 
 Mimir hosted services including local AI interfaces, private search, media applications, monitoring, automation, and archival utilities. I also created basic shell scripts and cron jobs for security auditing, system updates, system-status reporting, and diagnostics.
 
-Remote access across the lab used **Tailscale VPN**, allowing systems and selected services to be reached outside my local network without exposing them directly to the public internet. This system was tested thoroughly using my hosted streaming services to access my home media library stored on the NAS from my Airbnb in Germany.
+Remote access across the lab used **Tailscale**, allowing systems and selected services to be reached without exposing them directly to the public internet.
 
 ### 5\. Full VM + GPU Passthrough Experimentation
 
@@ -133,5 +137,12 @@ The bigger lesson was how quickly small architectural decisions compound as a sy
 
 Documentation became part of that lesson too. Because I had not treated documentation and version control as part of the original architecture, I often had to reconstruct what changed after the fact. A future build needs current architecture notes, organized configuration, clear ownership of where things live, and a meaningful change history from the beginning. The limited process history in this repository is a direct result of learning that lesson the hard way.
 
-## 
+## Repository Contents
+
+* [`docs/historical-reference.md`](docs/historical-reference.md) - historical reference for the environment and its major components
+* [`docs/service-inventory.md`](docs/service-inventory.md) - historical service inventory grouped by function
+* [`docs/troubleshooting-and-lessons.md`](docs/troubleshooting-and-lessons.md) - problems, workarounds, and lessons documented during the project
+* [`images/Nexusleonis-OG.png`](images/Nexusleonis-OG.png) - Homepage dashboard snapshot
+* [`images/nexusleonis.png`](images/nexusleonis.png) - NexusLeonis project logo
+* [`images/jellyfin-image.png`](images/jellyfin-image.png) - custom NexusLeonis Jellyfin header
 
