@@ -20,6 +20,10 @@ This repository is the final historical record of what the lab became.
 
 The original core was a custom-built PC running **Proxmox VE**. A Debian LXC container acted as the primary Docker host, with **Portainer** used to deploy and manage container stacks.
 
+<p align="center">
+  <img src="images/proxmox.png" alt="Proxmox overview showing the NexusLeonis host and Docker LXC" width="900">
+</p>
+
 Early services included Portainer, Homepage, Watchtower, Uptime Kuma, AdGuard Home, Speedtest Tracker, Filebrowser, Syncthing, n8n, Home Assistant, and Mealie.
 
 I built a custom Homepage dashboard as the central view of the environment, added service status and API-backed widgets, and used Uptime Kuma for active monitoring and downtime notifications. Watchtower handled scheduled container updates.
@@ -42,7 +46,7 @@ The Docker environment expanded into several functional groups:
 * Media servers
 * Media management and automation
 
-Later documentation shows roughly 30 service entries in the environment, although a small number were placeholders or deployed but not fully configured at the time of the snapshot.
+BY the end of the build, I had roughly 30 services running in the environment, although a small number were placeholders or deployed but not fully configured at the time of the final snapshot.
 
 I also customized the presentation of the media environment, including a dedicated NexusLeonis header for Jellyfin.
 
@@ -64,17 +68,21 @@ This became one of the more educational parts of the project. Persistent mounts,
 
 An ASUS ROG Zephyrus laptop was repurposed as **Mimir**, a Linux Mint workstation and secondary Docker host. It became a sandbox for Linux administration and additional self-hosted workloads.
 
-Mimir hosted services including local AI interfaces, private search, media applications, monitoring, automation, and archival utilities. I also created basic shell scripts and cron jobs for security auditing, system updates, system-status reporting, and diagnostics.
+Mimir hosted services including local AI interfaces, private search, media applications, monitoring, automation, and archival utilities. I also created basic shell scripts and cron jobs for security auditing, system updates, system-status reporting, and diagnostics. One of those scripts produced a single terminal status view for uptime, Tailscale connectivity, NAS mounts, failed-login checks, Docker container health, CPU/GPU temperatures, pending updates, and disk utilization.
 
-Remote access across the lab used **Tailscale**, allowing systems and selected services to be reached without exposing them directly to the public internet.
+<p align="center">
+  <img src="images/mimir-systemmonitor-script.png" alt="Mimir system-monitoring script output" width="900">
+</p>
+
+Remote access across the lab used **Tailscale VPN (Tailnet)**, allowing systems and selected services to be reached without exposing them directly to the public internet. I tested this extensively while traveling to Germany and successfully was able to reach my local network and stream media hosted on my NAS in Kansas.
 
 ### 5\. Full VM + GPU Passthrough Experimentation
 
-The Proxmox host also ran **Mimir-Tower**, a full Linux virtual machine intended for heavier local AI and Docker workloads.
+The Proxmox host also included **Mimir-Tower**, a full CachyOS Linux virtual machine intended for heavier local AI and Docker workloads.
 
-I configured PCIe GPU passthrough for an NVIDIA RTX 2070 Super using IOMMU/VFIO so the VM could directly use the GPU. The VM ran an Arch-based Linux distribution with CUDA support and used the same style of security-audit, update, status, and diagnostic scripts as Mimir.
+I configured PCIe GPU passthrough for an NVIDIA RTX 2070 Super using IOMMU/VFIO so the VM could directly use the GPU. GPU passthrough and CUDA had been working inside the guest before the storage failure. Once the LVM-thin issue occurred, however, the CachyOS VM could no longer be started, which effectively ended further work on that part of the lab.
 
-This was the most technically ambitious part of the original lab, but it also exposed the failure that ultimately ended the build. Corrupted LVM-thin metadata left Proxmox reporting only about 68 GB of usable storage from a roughly 1 TB NVMe drive. The issue remained unresolved and became the primary reason I stopped maintaining the original environment rather than continue building on an unreliable storage layer.
+This was the most technically ambitious part of the original lab, but it also exposed the failure that ultimately ended the build. Corrupted LVM-thin metadata left Proxmox reporting only a small fraction of the NVMe's true available space. The issue remained unresolved and became the primary reason I stopped maintaining the original environment rather than continue building on an unreliable storage layer.
 
 ## Problems I Had to Work Through
 
@@ -102,11 +110,17 @@ Centralizing storage introduced NFS/CIFS mount issues and permission problems. S
 
 ### GPU passthrough
 
-Passing the NVIDIA GPU directly to a Proxmox VM required host-level IOMMU/VFIO configuration, GPU driver isolation on the host, and VM-specific passthrough configuration. The final environment had the GPU successfully assigned to the VM with CUDA available inside the guest.
+Passing the NVIDIA GPU directly to a Proxmox VM required host-level IOMMU/VFIO configuration, GPU driver isolation on the host, and VM-specific passthrough configuration. Before the LVM-thin failure, the GPU was successfully assigned to the CachyOS VM with CUDA available inside the guest. After the storage issue, the VM could no longer be started.
 
 ### LVM-thin metadata corruption
 
-The most serious issue, and ultimately the reason I retired the original build, was corruption in the Proxmox LVM-thin metadata pool. The host had roughly 1 TB of physical NVMe storage, but the pool reported only about 68 GB as usable. The GPU-enabled VM was already consuming most of that visible capacity and could not be expanded normally.
+The most serious issue, and ultimately the reason I retired the original build, was corruption in the Proxmox LVM-thin metadata pool. Proxmox stopped reporting the NVMe's capacity correctly relative to what was physically available, and the storage problem eventually prevented the CachyOS GPU VM from starting at all.
+
+<p align="center">
+  <img src="images/LVM-thin-issue.png" alt="Proxmox LVM-thin storage issue at the end of the NexusLeonis OG build" width="900">
+  <br>
+  <sub>Proxmox reporting 96% usage on the \~1 TB NVMe-backed LVM-thin pool, even though the Docker LXC itself had only \~45 GB allocated and was using 33.95 GB.</sub>
+</p>
 
 Repair would have required taking the affected storage offline and attempting `thin\_repair`. I never completed that repair, and the capacity problem remained unresolved through the end of the project. Rather than keep adding fixes and services on top of a storage layer I no longer trusted, I chose to preserve the environment's final state and start over cleanly.
 
@@ -136,13 +150,4 @@ The project gave me hands-on experience with:
 The bigger lesson was how quickly small architectural decisions compound as a system grows. Problems stopped belonging to one application and started crossing Linux, virtualization, networking, storage, permissions, and container boundaries.
 
 Documentation became part of that lesson too. Because I had not treated documentation and version control as part of the original architecture, I often had to reconstruct what changed after the fact. A future build needs current architecture notes, organized configuration, clear ownership of where things live, and a meaningful change history from the beginning. The limited process history in this repository is a direct result of learning that lesson the hard way.
-
-## Repository Contents
-
-* [`docs/historical-reference.md`](docs/historical-reference.md) - historical reference for the environment and its major components
-* [`docs/service-inventory.md`](docs/service-inventory.md) - historical service inventory grouped by function
-* [`docs/troubleshooting-and-lessons.md`](docs/troubleshooting-and-lessons.md) - problems, workarounds, and lessons documented during the project
-* [`images/Nexusleonis-OG.png`](images/Nexusleonis-OG.png) - Homepage dashboard snapshot
-* [`images/nexusleonis.png`](images/nexusleonis.png) - NexusLeonis project logo
-* [`images/jellyfin-image.png`](images/jellyfin-image.png) - custom NexusLeonis Jellyfin header
 
